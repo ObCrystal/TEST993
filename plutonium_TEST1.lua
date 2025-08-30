@@ -1,203 +1,429 @@
--- Roblox Game Hub Script
--- Professional dark-themed game hub
+-- Plutonium | Professional Steal a Brainrot Script
+-- Advanced GUI with premium features
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+-- Script Variables
+local scriptEnabled = {
+    autoSteal = false,
+    autoFarm = false,
+    autoLockBase = false,
+    instantSteal = false,
+    noclip = false,
+    speedHack = false,
+    longJump = false,
+    autoRebirth = false,
+    esp = false,
+    antiKick = false,
+    godMode = false,
+    infiniteJump = false,
+    autoBuySell = false,
+    antiRagdoll = false,
+    teleportToBase = false
+}
+
+local originalValues = {
+    walkSpeed = humanoid.WalkSpeed,
+    jumpPower = humanoid.JumpPower
+}
 
 -- Create main ScreenGui
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "RobloxGameHub"
+screenGui.Name = "PlutoniuGUI"
+screenGui.ResetOnSpawn = false
 screenGui.Parent = playerGui
 
 -- Main Frame
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 800, 0, 600)
-mainFrame.Position = UDim2.new(0.5, -400, 0.5, -300)
-mainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+mainFrame.Size = UDim2.new(0, 900, 0, 650)
+mainFrame.Position = UDim2.new(0.5, -450, 0.5, -325)
+mainFrame.BackgroundColor3 = Color3.fromRGB(12, 12, 15)
 mainFrame.BorderSizePixel = 0
 mainFrame.Parent = screenGui
 
--- Add corner radius
-local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 12)
-corner.Parent = mainFrame
+-- Add gradient background
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(12, 12, 15)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(18, 18, 22))
+}
+gradient.Rotation = 45
+gradient.Parent = mainFrame
 
--- Header
-local header = Instance.new("Frame")
-header.Name = "Header"
-header.Size = UDim2.new(1, 0, 0, 60)
-header.Position = UDim2.new(0, 0, 0, 0)
-header.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-header.BorderSizePixel = 0
-header.Parent = mainFrame
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 16)
+mainCorner.Parent = mainFrame
+
+-- Header Frame
+local headerFrame = Instance.new("Frame")
+headerFrame.Name = "Header"
+headerFrame.Size = UDim2.new(1, 0, 0, 70)
+headerFrame.Position = UDim2.new(0, 0, 0, 0)
+headerFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+headerFrame.BorderSizePixel = 0
+headerFrame.Parent = mainFrame
 
 local headerCorner = Instance.new("UICorner")
-headerCorner.CornerRadius = UDim.new(0, 12)
-headerCorner.Parent = header
+headerCorner.CornerRadius = UDim.new(0, 16)
+headerCorner.Parent = headerFrame
+
+-- Header gradient
+local headerGradient = Instance.new("UIGradient")
+headerGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(138, 43, 226)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(75, 0, 130))
+}
+headerGradient.Rotation = 90
+headerGradient.Parent = headerFrame
 
 -- Title
 local title = Instance.new("TextLabel")
 title.Name = "Title"
-title.Size = UDim2.new(0, 200, 1, 0)
-title.Position = UDim2.new(0, 20, 0, 0)
+title.Size = UDim2.new(0, 300, 1, 0)
+title.Position = UDim2.new(0, 25, 0, 0)
 title.BackgroundTransparency = 1
-title.Text = "🎮 Roblox Game Hub"
+title.Text = "PLUTONIUM"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.TextSize = 18
+title.TextSize = 28
 title.TextXAlignment = Enum.TextXAlignment.Left
 title.Font = Enum.Font.GothamBold
-title.Parent = header
+title.Parent = headerFrame
+
+-- Subtitle
+local subtitle = Instance.new("TextLabel")
+subtitle.Name = "Subtitle"
+subtitle.Size = UDim2.new(0, 300, 0, 20)
+subtitle.Position = UDim2.new(0, 25, 0, 35)
+subtitle.BackgroundTransparency = 1
+subtitle.Text = "Professional Steal a Brainrot Script"
+subtitle.TextColor3 = Color3.fromRGB(200, 200, 200)
+subtitle.TextSize = 12
+subtitle.TextXAlignment = Enum.TextXAlignment.Left
+subtitle.Font = Enum.Font.Gotham
+subtitle.Parent = headerFrame
+
+-- Status indicator
+local statusFrame = Instance.new("Frame")
+statusFrame.Size = UDim2.new(0, 120, 0, 30)
+statusFrame.Position = UDim2.new(1, -140, 0, 20)
+statusFrame.BackgroundColor3 = Color3.fromRGB(34, 197, 94)
+statusFrame.BorderSizePixel = 0
+statusFrame.Parent = headerFrame
+
+local statusCorner = Instance.new("UICorner")
+statusCorner.CornerRadius = UDim.new(0, 15)
+statusCorner.Parent = statusFrame
+
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(1, 0, 1, 0)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Text = "● ACTIVE"
+statusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+statusLabel.TextSize = 12
+statusLabel.Font = Enum.Font.GothamBold
+statusLabel.Parent = statusFrame
 
 -- Close Button
 local closeButton = Instance.new("TextButton")
 closeButton.Name = "CloseButton"
-closeButton.Size = UDim2.new(0, 30, 0, 30)
-closeButton.Position = UDim2.new(1, -40, 0, 15)
-closeButton.BackgroundColor3 = Color3.fromRGB(220, 53, 69)
+closeButton.Size = UDim2.new(0, 35, 0, 35)
+closeButton.Position = UDim2.new(1, -50, 0, 17.5)
+closeButton.BackgroundColor3 = Color3.fromRGB(239, 68, 68)
 closeButton.Text = "×"
 closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeButton.TextSize = 18
+closeButton.TextSize = 20
 closeButton.Font = Enum.Font.GothamBold
-closeButton.Parent = header
+closeButton.Parent = headerFrame
 
 local closeCorner = Instance.new("UICorner")
-closeCorner.CornerRadius = UDim.new(0, 6)
+closeCorner.CornerRadius = UDim.new(0, 8)
 closeCorner.Parent = closeButton
 
--- Search Frame
-local searchFrame = Instance.new("Frame")
-searchFrame.Name = "SearchFrame"
-searchFrame.Size = UDim2.new(1, -40, 0, 40)
-searchFrame.Position = UDim2.new(0, 20, 0, 80)
-searchFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-searchFrame.BorderSizePixel = 0
-searchFrame.Parent = mainFrame
+-- Sidebar
+local sidebar = Instance.new("Frame")
+sidebar.Name = "Sidebar"
+sidebar.Size = UDim2.new(0, 200, 1, -70)
+sidebar.Position = UDim2.new(0, 0, 0, 70)
+sidebar.BackgroundColor3 = Color3.fromRGB(16, 16, 20)
+sidebar.BorderSizePixel = 0
+sidebar.Parent = mainFrame
 
-local searchCorner = Instance.new("UICorner")
-searchCorner.CornerRadius = UDim.new(0, 8)
-searchCorner.Parent = searchFrame
+local sidebarCorner = Instance.new("UICorner")
+sidebarCorner.CornerRadius = UDim.new(0, 0)
+sidebarCorner.Parent = sidebar
 
--- Search TextBox
-local searchBox = Instance.new("TextBox")
-searchBox.Name = "SearchBox"
-searchBox.Size = UDim2.new(1, -20, 1, 0)
-searchBox.Position = UDim2.new(0, 10, 0, 0)
-searchBox.BackgroundTransparency = 1
-searchBox.PlaceholderText = "🔍 Search games..."
-searchBox.Text = ""
-searchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-searchBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
-searchBox.TextSize = 14
-searchBox.TextXAlignment = Enum.TextXAlignment.Left
-searchBox.Font = Enum.Font.Gotham
-searchBox.Parent = searchFrame
+-- Content Frame
+local contentFrame = Instance.new("Frame")
+contentFrame.Name = "Content"
+contentFrame.Size = UDim2.new(1, -200, 1, -70)
+contentFrame.Position = UDim2.new(0, 200, 0, 70)
+contentFrame.BackgroundTransparency = 1
+contentFrame.Parent = mainFrame
 
--- Games ScrollFrame
-local gamesFrame = Instance.new("ScrollingFrame")
-gamesFrame.Name = "GamesFrame"
-gamesFrame.Size = UDim2.new(1, -40, 1, -160)
-gamesFrame.Position = UDim2.new(0, 20, 0, 140)
-gamesFrame.BackgroundTransparency = 1
-gamesFrame.BorderSizePixel = 0
-gamesFrame.ScrollBarThickness = 6
-gamesFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
-gamesFrame.Parent = mainFrame
+-- Tab system
+local tabs = {"Farming", "Movement", "Combat", "Misc", "Settings"}
+local currentTab = "Farming"
 
--- Grid Layout
-local gridLayout = Instance.new("UIGridLayout")
-gridLayout.CellSize = UDim2.new(0, 180, 0, 220)
-gridLayout.CellPadding = UDim2.new(0, 15, 0, 15)
-gridLayout.SortOrder = Enum.SortOrder.Name
-gridLayout.Parent = gamesFrame
+-- Create tab buttons
+local tabButtons = {}
+for i, tabName in pairs(tabs) do
+    local tabButton = Instance.new("TextButton")
+    tabButton.Name = tabName .. "Tab"
+    tabButton.Size = UDim2.new(1, -20, 0, 45)
+    tabButton.Position = UDim2.new(0, 10, 0, 10 + (i-1) * 55)
+    tabButton.BackgroundColor3 = tabName == currentTab and Color3.fromRGB(138, 43, 226) or Color3.fromRGB(25, 25, 30)
+    tabButton.Text = tabName
+    tabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    tabButton.TextSize = 14
+    tabButton.Font = Enum.Font.GothamBold
+    tabButton.Parent = sidebar
+    
+    local tabCorner = Instance.new("UICorner")
+    tabCorner.CornerRadius = UDim.new(0, 8)
+    tabCorner.Parent = tabButton
+    
+    tabButtons[tabName] = tabButton
+end
 
--- Game data
-local games = {
-    {name = "Adopt Me!", players = "200K+", rating = "4.8", category = "Simulation"},
-    {name = "Brookhaven RP", players = "150K+", rating = "4.6", category = "Roleplay"},
-    {name = "Tower of Hell", players = "80K+", rating = "4.5", category = "Obby"},
-    {name = "Arsenal", players = "120K+", rating = "4.7", category = "FPS"},
-    {name = "Blox Fruits", players = "300K+", rating = "4.9", category = "Fighting"},
-    {name = "Jailbreak", players = "90K+", rating = "4.4", category = "Action"}
-}
+-- Create content pages
+local contentPages = {}
 
--- Create game cards
-for i, game in pairs(games) do
-    local gameCard = Instance.new("Frame")
-    gameCard.Name = "GameCard" .. i
-    gameCard.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-    gameCard.BorderSizePixel = 0
-    gameCard.Parent = gamesFrame
+-- Farming Tab Content
+local farmingPage = Instance.new("ScrollingFrame")
+farmingPage.Name = "FarmingPage"
+farmingPage.Size = UDim2.new(1, -20, 1, -20)
+farmingPage.Position = UDim2.new(0, 10, 0, 10)
+farmingPage.BackgroundTransparency = 1
+farmingPage.BorderSizePixel = 0
+farmingPage.ScrollBarThickness = 6
+farmingPage.ScrollBarImageColor3 = Color3.fromRGB(138, 43, 226)
+farmingPage.Parent = contentFrame
+farmingPage.Visible = true
+
+local farmingLayout = Instance.new("UIListLayout")
+farmingLayout.SortOrder = Enum.SortOrder.LayoutOrder
+farmingLayout.Padding = UDim.new(0, 15)
+farmingLayout.Parent = farmingPage
+
+contentPages["Farming"] = farmingPage
+
+-- Function to create feature cards
+local function createFeatureCard(parent, title, description, toggleKey, layoutOrder)
+    local card = Instance.new("Frame")
+    card.Name = title .. "Card"
+    card.Size = UDim2.new(1, 0, 0, 80)
+    card.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+    card.BorderSizePixel = 0
+    card.LayoutOrder = layoutOrder
+    card.Parent = parent
     
     local cardCorner = Instance.new("UICorner")
-    cardCorner.CornerRadius = UDim.new(0, 8)
-    cardCorner.Parent = gameCard
+    cardCorner.CornerRadius = UDim.new(0, 12)
+    cardCorner.Parent = card
     
-    -- Game Image
-    local gameImage = Instance.new("Frame")
-    gameImage.Size = UDim2.new(1, 0, 0, 120)
-    gameImage.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-    gameImage.BorderSizePixel = 0
-    gameImage.Parent = gameCard
+    local cardTitle = Instance.new("TextLabel")
+    cardTitle.Size = UDim2.new(1, -100, 0, 25)
+    cardTitle.Position = UDim2.new(0, 15, 0, 10)
+    cardTitle.BackgroundTransparency = 1
+    cardTitle.Text = title
+    cardTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    cardTitle.TextSize = 16
+    cardTitle.TextXAlignment = Enum.TextXAlignment.Left
+    cardTitle.Font = Enum.Font.GothamBold
+    cardTitle.Parent = card
     
-    local imageCorner = Instance.new("UICorner")
-    imageCorner.CornerRadius = UDim.new(0, 8)
-    imageCorner.Parent = gameImage
+    local cardDesc = Instance.new("TextLabel")
+    cardDesc.Size = UDim2.new(1, -100, 0, 20)
+    cardDesc.Position = UDim2.new(0, 15, 0, 35)
+    cardDesc.BackgroundTransparency = 1
+    cardDesc.Text = description
+    cardDesc.TextColor3 = Color3.fromRGB(160, 160, 160)
+    cardDesc.TextSize = 12
+    cardDesc.TextXAlignment = Enum.TextXAlignment.Left
+    cardDesc.Font = Enum.Font.Gotham
+    cardDesc.Parent = card
     
-    -- Game Title
-    local gameTitle = Instance.new("TextLabel")
-    gameTitle.Size = UDim2.new(1, -10, 0, 25)
-    gameTitle.Position = UDim2.new(0, 5, 0, 125)
-    gameTitle.BackgroundTransparency = 1
-    gameTitle.Text = game.name
-    gameTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-    gameTitle.TextSize = 14
-    gameTitle.TextXAlignment = Enum.TextXAlignment.Left
-    gameTitle.Font = Enum.Font.GothamBold
-    gameTitle.Parent = gameCard
+    local toggleButton = Instance.new("TextButton")
+    toggleButton.Size = UDim2.new(0, 70, 0, 30)
+    toggleButton.Position = UDim2.new(1, -85, 0, 25)
+    toggleButton.BackgroundColor3 = scriptEnabled[toggleKey] and Color3.fromRGB(34, 197, 94) or Color3.fromRGB(239, 68, 68)
+    toggleButton.Text = scriptEnabled[toggleKey] and "ON" or "OFF"
+    toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    toggleButton.TextSize = 12
+    toggleButton.Font = Enum.Font.GothamBold
+    toggleButton.Parent = card
     
-    -- Stats
-    local statsLabel = Instance.new("TextLabel")
-    statsLabel.Size = UDim2.new(1, -10, 0, 20)
-    statsLabel.Position = UDim2.new(0, 5, 0, 150)
-    statsLabel.BackgroundTransparency = 1
-    statsLabel.Text = "👥 " .. game.players .. " | ⭐ " .. game.rating
-    statsLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
-    statsLabel.TextSize = 12
-    statsLabel.TextXAlignment = Enum.TextXAlignment.Left
-    statsLabel.Font = Enum.Font.Gotham
-    statsLabel.Parent = gameCard
+    local toggleCorner = Instance.new("UICorner")
+    toggleCorner.CornerRadius = UDim.new(0, 6)
+    toggleCorner.Parent = toggleButton
     
-    -- Get Script Button
-    local scriptButton = Instance.new("TextButton")
-    scriptButton.Size = UDim2.new(1, -10, 0, 30)
-    scriptButton.Position = UDim2.new(0, 5, 1, -35)
-    scriptButton.BackgroundColor3 = Color3.fromRGB(0, 123, 255)
-    scriptButton.Text = "📥 Get Script"
-    scriptButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    scriptButton.TextSize = 12
-    scriptButton.Font = Enum.Font.GothamBold
-    scriptButton.Parent = gameCard
-    
-    local buttonCorner = Instance.new("UICorner")
-    buttonCorner.CornerRadius = UDim.new(0, 6)
-    buttonCorner.Parent = scriptButton
-    
-    -- Button click effect
-    scriptButton.MouseButton1Click:Connect(function()
-        -- Copy loadstring to clipboard (example)
-        local scriptCode = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/ObCrystal/TEST993/main/' .. game.name:gsub("%s+", "") .. '.lua"))()'
-        setclipboard(scriptCode)
+    toggleButton.MouseButton1Click:Connect(function()
+        scriptEnabled[toggleKey] = not scriptEnabled[toggleKey]
+        toggleButton.BackgroundColor3 = scriptEnabled[toggleKey] and Color3.fromRGB(34, 197, 94) or Color3.fromRGB(239, 68, 68)
+        toggleButton.Text = scriptEnabled[toggleKey] and "ON" or "OFF"
         
-        -- Visual feedback
-        scriptButton.Text = "✅ Copied!"
-        wait(1)
-        scriptButton.Text = "📥 Get Script"
+        -- Add toggle functionality here
+        if toggleKey == "autoSteal" then
+            -- Auto steal logic
+        elseif toggleKey == "autoFarm" then
+            -- Auto farm logic
+        elseif toggleKey == "noclip" then
+            -- Noclip logic
+            if scriptEnabled[toggleKey] then
+                for _, part in pairs(character:GetChildren()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = false
+                    end
+                end
+            else
+                for _, part in pairs(character:GetChildren()) do
+                    if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                        part.CanCollide = true
+                    end
+                end
+            end
+        elseif toggleKey == "speedHack" then
+            humanoid.WalkSpeed = scriptEnabled[toggleKey] and 50 or originalValues.walkSpeed
+        elseif toggleKey == "longJump" then
+            humanoid.JumpPower = scriptEnabled[toggleKey] and 100 or originalValues.jumpPower
+        end
     end)
+    
+    return card
+end
+
+-- Create farming features
+createFeatureCard(farmingPage, "Auto Steal", "Automatically steal brainrots from other players", "autoSteal", 1)
+createFeatureCard(farmingPage, "Auto Farm", "Automatically collect cash and items", "autoFarm", 2)
+createFeatureCard(farmingPage, "Auto Lock Base", "Automatically secure your base", "autoLockBase", 3)
+createFeatureCard(farmingPage, "Instant Steal", "Instantly steal brainrots without delay", "instantSteal", 4)
+createFeatureCard(farmingPage, "Auto Rebirth", "Automatically rebirth when conditions are met", "autoRebirth", 5)
+createFeatureCard(farmingPage, "Auto Buy/Sell", "Automatically buy and sell items", "autoBuySell", 6)
+
+-- Movement Tab Content
+local movementPage = Instance.new("ScrollingFrame")
+movementPage.Name = "MovementPage"
+movementPage.Size = UDim2.new(1, -20, 1, -20)
+movementPage.Position = UDim2.new(0, 10, 0, 10)
+movementPage.BackgroundTransparency = 1
+movementPage.BorderSizePixel = 0
+movementPage.ScrollBarThickness = 6
+movementPage.ScrollBarImageColor3 = Color3.fromRGB(138, 43, 226)
+movementPage.Parent = contentFrame
+movementPage.Visible = false
+
+local movementLayout = Instance.new("UIListLayout")
+movementLayout.SortOrder = Enum.SortOrder.LayoutOrder
+movementLayout.Padding = UDim.new(0, 15)
+movementLayout.Parent = movementPage
+
+contentPages["Movement"] = movementPage
+
+createFeatureCard(movementPage, "Noclip", "Walk through walls and obstacles", "noclip", 1)
+createFeatureCard(movementPage, "Speed Hack", "Move faster than normal", "speedHack", 2)
+createFeatureCard(movementPage, "Long Jump", "Jump higher and farther", "longJump", 3)
+createFeatureCard(movementPage, "Infinite Jump", "Jump unlimited times in the air", "infiniteJump", 4)
+createFeatureCard(movementPage, "Teleport to Base", "Instantly teleport to your base", "teleportToBase", 5)
+
+-- Combat Tab Content
+local combatPage = Instance.new("ScrollingFrame")
+combatPage.Name = "CombatPage"
+combatPage.Size = UDim2.new(1, -20, 1, -20)
+combatPage.Position = UDim2.new(0, 10, 0, 10)
+combatPage.BackgroundTransparency = 1
+combatPage.BorderSizePixel = 0
+combatPage.ScrollBarThickness = 6
+combatPage.ScrollBarImageColor3 = Color3.fromRGB(138, 43, 226)
+combatPage.Parent = contentFrame
+combatPage.Visible = false
+
+local combatLayout = Instance.new("UIListLayout")
+combatLayout.SortOrder = Enum.SortOrder.LayoutOrder
+combatLayout.Padding = UDim.new(0, 15)
+combatLayout.Parent = combatPage
+
+contentPages["Combat"] = combatPage
+
+createFeatureCard(combatPage, "God Mode", "Take no damage from other players", "godMode", 1)
+createFeatureCard(combatPage, "ESP", "See players and brainrots through walls", "esp", 2)
+createFeatureCard(combatPage, "Anti Ragdoll", "Prevent ragdoll effects", "antiRagdoll", 3)
+
+-- Misc Tab Content
+local miscPage = Instance.new("ScrollingFrame")
+miscPage.Name = "MiscPage"
+miscPage.Size = UDim2.new(1, -20, 1, -20)
+miscPage.Position = UDim2.new(0, 10, 0, 10)
+miscPage.BackgroundTransparency = 1
+miscPage.BorderSizePixel = 0
+miscPage.ScrollBarThickness = 6
+miscPage.ScrollBarImageColor3 = Color3.fromRGB(138, 43, 226)
+miscPage.Parent = contentFrame
+miscPage.Visible = false
+
+local miscLayout = Instance.new("UIListLayout")
+miscLayout.SortOrder = Enum.SortOrder.LayoutOrder
+miscLayout.Padding = UDim.new(0, 15)
+miscLayout.Parent = miscPage
+
+contentPages["Misc"] = miscPage
+
+createFeatureCard(miscPage, "Anti Kick", "Prevent being kicked from the game", "antiKick", 1)
+
+-- Settings Tab Content
+local settingsPage = Instance.new("ScrollingFrame")
+settingsPage.Name = "SettingsPage"
+settingsPage.Size = UDim2.new(1, -20, 1, -20)
+settingsPage.Position = UDim2.new(0, 10, 0, 10)
+settingsPage.BackgroundTransparency = 1
+settingsPage.BorderSizePixel = 0
+settingsPage.ScrollBarThickness = 6
+settingsPage.ScrollBarImageColor3 = Color3.fromRGB(138, 43, 226)
+settingsPage.Parent = contentFrame
+settingsPage.Visible = false
+
+contentPages["Settings"] = settingsPage
+
+-- Tab switching functionality
+for tabName, tabButton in pairs(tabButtons) do
+    tabButton.MouseButton1Click:Connect(function()
+        -- Hide all pages
+        for _, page in pairs(contentPages) do
+            page.Visible = false
+        end
+        
+        -- Show selected page
+        if contentPages[tabName] then
+            contentPages[tabName].Visible = true
+        end
+        
+        -- Update button colors
+        for name, button in pairs(tabButtons) do
+            button.BackgroundColor3 = name == tabName and Color3.fromRGB(138, 43, 226) or Color3.fromRGB(25, 25, 30)
+        end
+        
+        currentTab = tabName
+    end)
+end
+
+-- Update canvas sizes
+for _, page in pairs(contentPages) do
+    local layout = page:FindFirstChild("UIListLayout")
+    if layout then
+        layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+            page.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 20)
+        end)
+        page.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 20)
+    end
 end
 
 -- Make draggable
@@ -210,7 +436,7 @@ local function updateInput(input)
     mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
 end
 
-header.InputBegan:Connect(function(input)
+headerFrame.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragging = true
         dragStart = input.Position
@@ -224,7 +450,7 @@ header.InputBegan:Connect(function(input)
     end
 end)
 
-header.InputChanged:Connect(function(input)
+headerFrame.InputChanged:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseMovement then
         if dragging then
             updateInput(input)
@@ -237,10 +463,15 @@ closeButton.MouseButton1Click:Connect(function()
     screenGui:Destroy()
 end)
 
--- Update canvas size
-gamesFrame.CanvasSize = UDim2.new(0, 0, 0, gridLayout.AbsoluteContentSize.Y + 20)
-gridLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-    gamesFrame.CanvasSize = UDim2.new(0, 0, 0, gridLayout.AbsoluteContentSize.Y + 20)
+-- Noclip loop
+RunService.Stepped:Connect(function()
+    if scriptEnabled.noclip and character then
+        for _, part in pairs(character:GetChildren()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
+            end
+        end
+    end
 end)
 
-print("Roblox Game Hub loaded successfully!")
+print("Plutonium loaded successfully! Professional Steal a Brainrot Script is ready.")
