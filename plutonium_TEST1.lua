@@ -1,238 +1,246 @@
-"use client"
+-- Roblox Game Hub Script
+-- Professional dark-themed game hub
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Search, Download, Users, Star, TrendingUp, Gamepad2, Settings, User } from 'lucide-react'
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 
-const featuredGames = [
-  {
-    id: 1,
-    title: "Adopt Me!",
-    description: "Raise and dress up cute pets, decorate your house, and play with friends!",
-    players: "200K+",
-    rating: 4.8,
-    image:
-      "https://tr.rbxcdn.com/30DAY-AvatarHeadshot-A84D436E5E674C24B0A259C5B52F3C3A-Png/150/150/AvatarHeadshot/Png/noFilter",
-    category: "Simulation",
-    trending: true,
-  },
-  {
-    id: 2,
-    title: "Brookhaven RP",
-    description: "Welcome to Brookhaven, where you can be anything you want to be!",
-    players: "150K+",
-    rating: 4.6,
-    image: "https://tr.rbxcdn.com/7cd5f12b1d3b5b4c8a9e2f1a3c4d5e6f7g8h9i0j/768/432/Image/Png",
-    category: "Roleplay",
-    trending: true,
-  },
-  {
-    id: 3,
-    title: "Tower of Hell",
-    description: "Climb the tower and reach the top! Can you beat the ultimate challenge?",
-    players: "80K+",
-    rating: 4.5,
-    image: "https://tr.rbxcdn.com/1f2e3d4c5b6a7980fed1cba0987654321/768/432/Image/Png",
-    category: "Obby",
-    trending: false,
-  },
-  {
-    id: 4,
-    title: "Arsenal",
-    description: "Fast-paced FPS action with unique weapons and competitive gameplay!",
-    players: "120K+",
-    rating: 4.7,
-    image: "https://tr.rbxcdn.com/9a8b7c6d5e4f3210fedcba0987654321/768/432/Image/Png",
-    category: "FPS",
-    trending: true,
-  },
-  {
-    id: 5,
-    title: "Blox Fruits",
-    description: "Become the strongest fighter with devil fruits and epic battles!",
-    players: "300K+",
-    rating: 4.9,
-    image: "https://tr.rbxcdn.com/5f4e3d2c1b0a9876543210fedcba0987/768/432/Image/Png",
-    category: "Fighting",
-    trending: true,
-  },
-  {
-    id: 6,
-    title: "Jailbreak",
-    description: "Rob banks, escape prison, or stop criminals as a police officer!",
-    players: "90K+",
-    rating: 4.4,
-    image: "https://tr.rbxcdn.com/3c2b1a0987654321fedcba0987654321/768/432/Image/Png",
-    category: "Action",
-    trending: false,
-  },
-]
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
 
-const categories = ["All", "Simulation", "Roleplay", "Obby", "FPS", "Fighting", "Action"]
+-- Create main ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "RobloxGameHub"
+screenGui.Parent = playerGui
 
-export default function RobloxGameHub() {
-  const [selectedCategory, setSelectedCategory] = useState("All")
-  const [searchQuery, setSearchQuery] = useState("")
+-- Main Frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 800, 0, 600)
+mainFrame.Position = UDim2.new(0.5, -400, 0.5, -300)
+mainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
 
-  const filteredGames = featuredGames.filter((game) => {
-    const matchesCategory = selectedCategory === "All" || game.category === selectedCategory
-    const matchesSearch =
-      game.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      game.description.toLowerCase().includes(searchQuery.toLowerCase())
-    return matchesCategory && matchesSearch
-  })
+-- Add corner radius
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12)
+corner.Parent = mainFrame
 
-  return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Header */}
-      <header className="border-b border-border bg-card">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Gamepad2 className="h-6 w-6 text-primary" />
-              <h1 className="text-xl font-bold text-balance">Roblox Game Hub</h1>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="sm">
-                <Settings className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="sm">
-                <User className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+-- Header
+local header = Instance.new("Frame")
+header.Name = "Header"
+header.Size = UDim2.new(1, 0, 0, 60)
+header.Position = UDim2.new(0, 0, 0, 0)
+header.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+header.BorderSizePixel = 0
+header.Parent = mainFrame
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-6">
-        {/* Search and Filters */}
-        <div className="mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-          <div className="relative w-full sm:max-w-sm">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Search games..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
+local headerCorner = Instance.new("UICorner")
+headerCorner.CornerRadius = UDim.new(0, 12)
+headerCorner.Parent = header
 
-          <div className="flex flex-wrap gap-2">
-            {categories.map((category) => (
-              <Button
-                key={category}
-                variant={selectedCategory === category ? "default" : "secondary"}
-                size="sm"
-                onClick={() => setSelectedCategory(category)}
-                className="text-xs px-3 py-1"
-              >
-                {category}
-              </Button>
-            ))}
-          </div>
-        </div>
+-- Title
+local title = Instance.new("TextLabel")
+title.Name = "Title"
+title.Size = UDim2.new(0, 200, 1, 0)
+title.Position = UDim2.new(0, 20, 0, 0)
+title.BackgroundTransparency = 1
+title.Text = "🎮 Roblox Game Hub"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextSize = 18
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Font = Enum.Font.GothamBold
+title.Parent = header
 
-        {/* Stats Bar */}
-        <div className="mb-6 grid grid-cols-3 gap-3">
-          <Card className="p-3">
-            <CardContent className="flex items-center justify-between p-0">
-              <div>
-                <p className="text-xs text-muted-foreground">Games</p>
-                <p className="text-lg font-bold">{featuredGames.length}</p>
-              </div>
-              <Gamepad2 className="h-5 w-5 text-primary" />
-            </CardContent>
-          </Card>
-          <Card className="p-3">
-            <CardContent className="flex items-center justify-between p-0">
-              <div>
-                <p className="text-xs text-muted-foreground">Players</p>
-                <p className="text-lg font-bold">1.2M+</p>
-              </div>
-              <Users className="h-5 w-5 text-primary" />
-            </CardContent>
-          </Card>
-          <Card className="p-3">
-            <CardContent className="flex items-center justify-between p-0">
-              <div>
-                <p className="text-xs text-muted-foreground">Trending</p>
-                <p className="text-lg font-bold">{featuredGames.filter((g) => g.trending).length}</p>
-              </div>
-              <TrendingUp className="h-5 w-5 text-primary" />
-            </CardContent>
-          </Card>
-        </div>
+-- Close Button
+local closeButton = Instance.new("TextButton")
+closeButton.Name = "CloseButton"
+closeButton.Size = UDim2.new(0, 30, 0, 30)
+closeButton.Position = UDim2.new(1, -40, 0, 15)
+closeButton.BackgroundColor3 = Color3.fromRGB(220, 53, 69)
+closeButton.Text = "×"
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.TextSize = 18
+closeButton.Font = Enum.Font.GothamBold
+closeButton.Parent = header
 
-        {/* Game Grid */}
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {filteredGames.map((game) => (
-            <Card
-              key={game.id}
-              className="group overflow-hidden transition-all hover:shadow-lg hover:shadow-primary/20"
-            >
-              <div className="relative">
-                <img
-                  src={game.image || "/placeholder.svg"}
-                  alt={game.title}
-                  className="h-32 w-full object-cover transition-transform group-hover:scale-105"
-                />
-                {game.trending && (
-                  <Badge className="absolute right-1 top-1 text-xs bg-primary text-primary-foreground">
-                    <TrendingUp className="mr-1 h-2 w-2" />
-                    Hot
-                  </Badge>
-                )}
-              </div>
-              <CardHeader className="p-3 pb-2">
-                <CardTitle className="text-sm text-balance leading-tight">{game.title}</CardTitle>
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <div className="flex items-center">
-                    <Users className="mr-1 h-3 w-3" />
-                    {game.players}
-                  </div>
-                  <div className="flex items-center">
-                    <Star className="mr-1 h-3 w-3 fill-yellow-400 text-yellow-400" />
-                    {game.rating}
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="p-3 pt-0">
-                <Button className="w-full h-8" size="sm">
-                  <Download className="mr-1 h-3 w-3" />
-                  Get Script
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 6)
+closeCorner.Parent = closeButton
 
-        {filteredGames.length === 0 && (
-          <div className="text-center py-8">
-            <Gamepad2 className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
-            <h3 className="text-base font-semibold mb-1">No games found</h3>
-            <p className="text-sm text-muted-foreground">Try adjusting your search or filter criteria.</p>
-          </div>
-        )}
-      </main>
+-- Search Frame
+local searchFrame = Instance.new("Frame")
+searchFrame.Name = "SearchFrame"
+searchFrame.Size = UDim2.new(1, -40, 0, 40)
+searchFrame.Position = UDim2.new(0, 20, 0, 80)
+searchFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+searchFrame.BorderSizePixel = 0
+searchFrame.Parent = mainFrame
 
-      {/* Footer */}
-      <footer className="border-t border-border bg-card mt-8">
-        <div className="container mx-auto px-4 py-4">
-          <div className="text-center">
-            <div className="flex items-center justify-center space-x-2 mb-2">
-              <Gamepad2 className="h-4 w-4 text-primary" />
-              <span className="text-sm font-semibold">Roblox Game Hub</span>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Discover and play the best Roblox games. Built for gamers, by gamers.
-            </p>
-          </div>
-        </div>
-      </footer>
-    </div>
-  )
+local searchCorner = Instance.new("UICorner")
+searchCorner.CornerRadius = UDim.new(0, 8)
+searchCorner.Parent = searchFrame
+
+-- Search TextBox
+local searchBox = Instance.new("TextBox")
+searchBox.Name = "SearchBox"
+searchBox.Size = UDim2.new(1, -20, 1, 0)
+searchBox.Position = UDim2.new(0, 10, 0, 0)
+searchBox.BackgroundTransparency = 1
+searchBox.PlaceholderText = "🔍 Search games..."
+searchBox.Text = ""
+searchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+searchBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+searchBox.TextSize = 14
+searchBox.TextXAlignment = Enum.TextXAlignment.Left
+searchBox.Font = Enum.Font.Gotham
+searchBox.Parent = searchFrame
+
+-- Games ScrollFrame
+local gamesFrame = Instance.new("ScrollingFrame")
+gamesFrame.Name = "GamesFrame"
+gamesFrame.Size = UDim2.new(1, -40, 1, -160)
+gamesFrame.Position = UDim2.new(0, 20, 0, 140)
+gamesFrame.BackgroundTransparency = 1
+gamesFrame.BorderSizePixel = 0
+gamesFrame.ScrollBarThickness = 6
+gamesFrame.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
+gamesFrame.Parent = mainFrame
+
+-- Grid Layout
+local gridLayout = Instance.new("UIGridLayout")
+gridLayout.CellSize = UDim2.new(0, 180, 0, 220)
+gridLayout.CellPadding = UDim2.new(0, 15, 0, 15)
+gridLayout.SortOrder = Enum.SortOrder.Name
+gridLayout.Parent = gamesFrame
+
+-- Game data
+local games = {
+    {name = "Adopt Me!", players = "200K+", rating = "4.8", category = "Simulation"},
+    {name = "Brookhaven RP", players = "150K+", rating = "4.6", category = "Roleplay"},
+    {name = "Tower of Hell", players = "80K+", rating = "4.5", category = "Obby"},
+    {name = "Arsenal", players = "120K+", rating = "4.7", category = "FPS"},
+    {name = "Blox Fruits", players = "300K+", rating = "4.9", category = "Fighting"},
+    {name = "Jailbreak", players = "90K+", rating = "4.4", category = "Action"}
 }
+
+-- Create game cards
+for i, game in pairs(games) do
+    local gameCard = Instance.new("Frame")
+    gameCard.Name = "GameCard" .. i
+    gameCard.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    gameCard.BorderSizePixel = 0
+    gameCard.Parent = gamesFrame
+    
+    local cardCorner = Instance.new("UICorner")
+    cardCorner.CornerRadius = UDim.new(0, 8)
+    cardCorner.Parent = gameCard
+    
+    -- Game Image
+    local gameImage = Instance.new("Frame")
+    gameImage.Size = UDim2.new(1, 0, 0, 120)
+    gameImage.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    gameImage.BorderSizePixel = 0
+    gameImage.Parent = gameCard
+    
+    local imageCorner = Instance.new("UICorner")
+    imageCorner.CornerRadius = UDim.new(0, 8)
+    imageCorner.Parent = gameImage
+    
+    -- Game Title
+    local gameTitle = Instance.new("TextLabel")
+    gameTitle.Size = UDim2.new(1, -10, 0, 25)
+    gameTitle.Position = UDim2.new(0, 5, 0, 125)
+    gameTitle.BackgroundTransparency = 1
+    gameTitle.Text = game.name
+    gameTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    gameTitle.TextSize = 14
+    gameTitle.TextXAlignment = Enum.TextXAlignment.Left
+    gameTitle.Font = Enum.Font.GothamBold
+    gameTitle.Parent = gameCard
+    
+    -- Stats
+    local statsLabel = Instance.new("TextLabel")
+    statsLabel.Size = UDim2.new(1, -10, 0, 20)
+    statsLabel.Position = UDim2.new(0, 5, 0, 150)
+    statsLabel.BackgroundTransparency = 1
+    statsLabel.Text = "👥 " .. game.players .. " | ⭐ " .. game.rating
+    statsLabel.TextColor3 = Color3.fromRGB(180, 180, 180)
+    statsLabel.TextSize = 12
+    statsLabel.TextXAlignment = Enum.TextXAlignment.Left
+    statsLabel.Font = Enum.Font.Gotham
+    statsLabel.Parent = gameCard
+    
+    -- Get Script Button
+    local scriptButton = Instance.new("TextButton")
+    scriptButton.Size = UDim2.new(1, -10, 0, 30)
+    scriptButton.Position = UDim2.new(0, 5, 1, -35)
+    scriptButton.BackgroundColor3 = Color3.fromRGB(0, 123, 255)
+    scriptButton.Text = "📥 Get Script"
+    scriptButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    scriptButton.TextSize = 12
+    scriptButton.Font = Enum.Font.GothamBold
+    scriptButton.Parent = gameCard
+    
+    local buttonCorner = Instance.new("UICorner")
+    buttonCorner.CornerRadius = UDim.new(0, 6)
+    buttonCorner.Parent = scriptButton
+    
+    -- Button click effect
+    scriptButton.MouseButton1Click:Connect(function()
+        -- Copy loadstring to clipboard (example)
+        local scriptCode = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/ObCrystal/TEST993/main/' .. game.name:gsub("%s+", "") .. '.lua"))()'
+        setclipboard(scriptCode)
+        
+        -- Visual feedback
+        scriptButton.Text = "✅ Copied!"
+        wait(1)
+        scriptButton.Text = "📥 Get Script"
+    end)
+end
+
+-- Make draggable
+local dragging = false
+local dragStart = nil
+local startPos = nil
+
+local function updateInput(input)
+    local delta = input.Position - dragStart
+    mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+header.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = mainFrame.Position
+        
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+header.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        if dragging then
+            updateInput(input)
+        end
+    end
+end)
+
+-- Close button functionality
+closeButton.MouseButton1Click:Connect(function()
+    screenGui:Destroy()
+end)
+
+-- Update canvas size
+gamesFrame.CanvasSize = UDim2.new(0, 0, 0, gridLayout.AbsoluteContentSize.Y + 20)
+gridLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    gamesFrame.CanvasSize = UDim2.new(0, 0, 0, gridLayout.AbsoluteContentSize.Y + 20)
+end)
+
+print("Roblox Game Hub loaded successfully!")
