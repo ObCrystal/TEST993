@@ -1,4 +1,3 @@
-
 -- Plutonium | Professional Steal a Brainrot Script
 -- Advanced GUI with premium features and enhanced effects
 -- Version 2.0 - Extended Premium Edition
@@ -1072,5 +1071,6 @@ print("🚀 Plutonium v2.0 Premium Edition loaded successfully!")
 print("⚡ Advanced features enabled")
 print("💎 Premium GUI activated")
 ```
+
 
 
